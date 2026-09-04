@@ -105,8 +105,14 @@ combine it with the Batch-vs-Fabric cost figures.
 
 ## Benchmark matrix
 
-Nine dimensions across three execution paths. Quantitative cells are
-`[measure]`; qualitative cells reflect this repo's actual design.
+Nine dimensions across three execution paths, for qualitative context only:
+this table exists to document dependency, deployment, and portability
+properties across all three implementations. It is not a third cost
+comparison. The only economic comparison in this benchmark is the
+Fabric-vs-Batch one above; `legacy/runtime-clone/` appears here purely for
+the secondary release-behaviour and cold-start comparison, never as an
+alternative cost baseline. Quantitative cells are `[measure]`; qualitative
+cells reflect this repo's actual design.
 
 | Dimension | Fabric Python notebook | Batch + pinned `uv` workload (`legacy/runtime-clone/`) | Batch + container (`runtime/image/`) |
 |---|---|---|---|
