@@ -1,0 +1,54 @@
+# Default path: zero cloud dependency.
+#   docker compose run --rm runtime
+#   docker compose run --rm core-test
+#
+# The `compatibility` profile (tests/compatibility/, added alongside the
+# cross-engine test) is opt-in and starts a pinned Spark/Delta engine:
+#   docker compose --profile compatibility run --rm compatibility-test
+
+services:
+  runtime: # the image Batch runs, pointed at a local volume -- zero cloud
+    build:
+      context: .
+      dockerfile: runtime/image/Dockerfile
+      target: stage-0
+      args:
+        GIT_COMMIT: "${GIT_COMMIT:-8a4c1d}"
+    image: lakehouse-runtime:local
+    volumes:
+      - "./data:/data"
+    command:
+      [
+        "--run-id", "RUN-0187",
+        "--window-start", "2026-09-01T00:00:00Z",
+        "--window-end", "2026-09-02T00:00:00Z",
+        "--table-uri", "/data/bronze/orders_raw",
+        "--checkpoint-path", "/data/checkpoints/orders.json",
+        "--manifest-path", "/data/manifests/RUN-0187.json",
+        "--pages", "10",
+      ]
+
+  core-test: # `uv run pytest tests/core`, run inside the runtime image's own Python (the `test` build stage)
+    build:
+      context: .
+      dockerfile: runtime/image/Dockerfile
+      target: test
+
+  compatibility-test:
+    profiles: ["compatibility"]
+    build:
+      context: .
+      dockerfile: tests/compatibility/Dockerfile
+      args:
+        DELTALAKE_VERSION: "${COMPAT_DELTALAKE:-1.6.3}"
+    image: "lakehouse-compat:spark4.2.0-delta4.4.0-deltalake${COMPAT_DELTALAKE:-1.6.3}"
+    volumes:
+      - ".:/src:ro"
+      - "compat-data:/work"
+    environment:
+      - "COMPAT_WORKDIR=/work"
+      - "PYTHONDONTWRITEBYTECODE=1"
+    command: ["python3", "-m", "pytest", "-p", "no:cacheprovider", "tests/compatibility", "-v", "-s", "-o", "addopts="]
+
+volumes:
+  compat-data: {}
