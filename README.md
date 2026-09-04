@@ -6,11 +6,11 @@ The companion repository for *Boundaries of the Lakehouse*, a three-part
 field report on separating compute, table storage, and business logic in
 Microsoft Fabric:
 
-1. **Cheap Compute, Real Engineering** — why application-like Python data
+1. **Cheap Compute, Real Engineering**: why application-like Python data
    workloads run on Azure Batch, and how the execution model itself evolved.
-2. **Keep the Lakehouse, Move the Compute** — what `delta-rs` makes
+2. **Keep the Lakehouse, Move the Compute**: what `delta-rs` makes
    possible, and where open-table interoperability breaks.
-3. **Where Python Stops** — why Gold-layer business logic moves back into
+3. **Where Python Stops**: why Gold-layer business logic moves back into
    Fabric through Materialized Lake Views.
 
 Articles: <https://esbenthomsen.com/writing> (the site is pre-launch as of
@@ -46,7 +46,7 @@ SOURCE ──► AZURE BATCH / PYTHON WORKLOAD
 ```
 
 This repo is the reference architecture, not a sanitised dump of any
-production repository — a deliberately designed implementation of that
+production repository: a deliberately designed implementation of that
 diagram. The default path runs entirely locally, with zero cloud
 dependencies.
 
@@ -68,7 +68,7 @@ docker compose run --rm runtime
 docker compose --profile compatibility run --rm compatibility-test
 ```
 
-(The two `docker compose` commands need a Docker host — they are not part
+(The two `docker compose` commands need a Docker host. They are not part
 of the default no-cloud test path above.)
 
 ## Repository layout
@@ -84,7 +84,7 @@ lakehouse-runtime-demo/
 │       ├── uv.lock
 │       └── entrypoint.py
 ├── legacy/
-│   └── runtime-clone/         # the earlier "clone + uv at task start" model -- history, not a peer option
+│   └── runtime-clone/         # the earlier "clone + uv at task start" model: history, not a peer option
 │       ├── README.md
 │       ├── task-command.sh
 │       └── example-script.py
@@ -113,7 +113,7 @@ A few additions beyond the series brief's tree, all needed to make the repo
 actually runnable rather than documentation-only scaffolding: the root
 `pyproject.toml`/`uv.lock`/`.python-version` (the dev/test project), package
 `__init__.py` files, `ingestion/source.py` (the source client itself),
-`silver/prepare_customers.py` (so `silver.customers` — a Gold input — is
+`silver/prepare_customers.py` (so `silver.customers`, a Gold input, is
 actually produced), `tests/core/test_submit_batch_job.py`, and
 `tests/compatibility/Dockerfile` + `version_matrix.json` (the pinned engine
 image and the expectation matrix `test_feature_compatibility.py` checks
@@ -127,7 +127,7 @@ git clone HEAD + uv     →     pinned revision + lockfile + uv →   tested ima
 (legacy/runtime-clone/)                                           (runtime/image/, primary)
 ```
 
-`uv` is not replaced by Docker — it stays the dependency resolver and
+`uv` is not replaced by Docker: it stays the dependency resolver and
 Python runner *inside* the build (see `runtime/image/Dockerfile`). What
 moved is *when* the executable version is fixed: at release, not at task
 start. See [`legacy/runtime-clone/README.md`](legacy/runtime-clone/README.md)
@@ -136,14 +136,14 @@ for the full history and what the earlier model got right.
 ## Pinning discipline
 
 - The `uv` runtime uses `uv.lock` in both projects (root and
-  `runtime/image/`) — CI checks the two lockfiles agree on `deltalake` and
+  `runtime/image/`). CI checks the two lockfiles agree on `deltalake` and
   `pyarrow`.
 - The Docker deployment example (`orchestration/submit_batch_job.py`)
-  refuses any image reference that isn't `repo@sha256:<64 hex>` — a
+  refuses any image reference that isn't `repo@sha256:<64 hex>`: a
   floating tag can move under a pinned run record without anyone noticing.
 - PEP 723 inline metadata (`legacy/runtime-clone/example-script.py`) makes
   a script self-describing. It is not by itself sufficient
-  reproducibility — the reproducible unit is pinned code plus
+  reproducibility: the reproducible unit is pinned code plus
   deterministic dependency resolution (a lockfile).
 
 ## The synthetic domain model
@@ -164,28 +164,28 @@ RUN-0187 · COMMIT 8A4C1D · IMAGE SHA256:... · DELTA VERSION 1431 → 1432
 
 Verified in this repo, by test:
 
-- The ghost retry (`tests/core/test_ghost_retry.py`) — a committed Delta
+- The ghost retry (`tests/core/test_ghost_retry.py`): a committed Delta
   write, an interrupted checkpoint, and a retry, against a real local
   Delta table.
-- Schema-contract classification (`tests/core/test_schema_contract.py`) —
+- Schema-contract classification (`tests/core/test_schema_contract.py`):
   additive vs. breaking Bronze/Silver changes.
 - Digest-only Batch task submission (`tests/core/test_submit_batch_job.py`).
-- The cross-engine incident shape (`tests/compatibility/`, opt-in) — real
+- The cross-engine incident shape (`tests/compatibility/`, opt-in): real
   behaviour observed against a pinned `deltalake`/Spark/`delta-spark` pair,
   recorded in `tests/compatibility/version_matrix.json`, not asserted from
   memory.
 
-Explicitly **not** verified against a real Fabric workspace — see the
+Explicitly **not** verified against a real Fabric workspace. See the
 `UNVERIFIED` markers in each file before treating them as final:
 
-- `gold/materialized_lake_views.sql` — the exact MLV syntax and refresh
+- `gold/materialized_lake_views.sql`: the exact MLV syntax and refresh
   behaviour.
-- `orchestration/fabric_pipeline_contract.md` §8 — which Fabric activity
+- `orchestration/fabric_pipeline_contract.md` §8: which Fabric activity
   type submits the Batch task, its polling cadence, and how it reads the
   run manifest.
-- `benchmark/README.md` — the Fabric Python notebook path's setup
+- `benchmark/README.md`: the Fabric Python notebook path's setup
   mechanics, and every `[measure]` placeholder.
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE).
+MIT: see [`LICENSE`](LICENSE).
