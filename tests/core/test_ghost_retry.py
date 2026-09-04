@@ -11,6 +11,7 @@ from deltalake import DeltaTable
 from ingestion.append_bronze import ingest_window
 from ingestion.checkpoint import Checkpoint, CheckpointWriteInterrupted
 from ingestion.source import SyntheticOrdersAPI
+from silver.prepare_orders import prepare_orders
 
 
 def _crash_before_checkpoint_on(page_to_kill: int):
@@ -71,3 +72,32 @@ def test_ghost_retry_is_visible_in_commit_metadata(bronze_uri: str, checkpoint_p
     assert len(page_42_commits) == 2  # the original commit and the retry's duplicate commit
     for entry in page_42_commits:
         assert entry["ingestion_run_id"] == run_id
+
+
+def test_stable_source_id_dedupes_in_silver(bronze_uri: str, checkpoint_path: Path, run_id: str):
+    """Bronze intentionally makes the ghost retry's duplicate visible (see
+    above). Silver is where the stable source_event_id resolves it -- the
+    reference design from article 2 preserves enough source identity in
+    Bronze that retries are visible and repairable, and lets Silver apply
+    the technical uniqueness rule.
+    """
+    source = SyntheticOrdersAPI(pages=3, page_size=5, start_page=41)
+    cp = Checkpoint(checkpoint_path)
+
+    with pytest.raises(CheckpointWriteInterrupted):
+        ingest_window(
+            source=source,
+            table_uri=bronze_uri,
+            run_id=run_id,
+            checkpoint=cp,
+            after_commit=_crash_before_checkpoint_on(42),
+        )
+    ingest_window(source=source, table_uri=bronze_uri, run_id=run_id, checkpoint=cp)  # the retry
+
+    bronze_rows = DeltaTable(bronze_uri).to_pyarrow_table().num_rows
+    assert bronze_rows == 20  # the duplicate is visible in Bronze
+
+    silver = prepare_orders(bronze_uri=bronze_uri)
+    assert silver.num_rows == 15  # Silver resolves the duplicate by source_event_id (-> order_id)
+    order_ids = silver.column("order_id").to_pylist()
+    assert len(order_ids) == len(set(order_ids))

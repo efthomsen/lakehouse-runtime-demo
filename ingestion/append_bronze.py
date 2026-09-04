@@ -20,17 +20,11 @@ from deltalake.exceptions import TableNotFoundError
 
 from ingestion.checkpoint import Checkpoint
 from ingestion.source import SourcePage
+from silver.table_contract import BRONZE_ORDERS_RAW
 
-BRONZE_SCHEMA = pa.schema(
-    [
-        ("source_event_id", pa.string()),
-        ("source_updated_at", pa.timestamp("us", "UTC")),
-        ("ingested_at", pa.timestamp("us", "UTC")),
-        ("ingestion_run_id", pa.string()),
-        ("source_page", pa.int32()),
-        ("payload", pa.string()),
-    ]
-)
+# The contract is the single source of truth for this schema; the writer and
+# the schema-contract check must never drift apart.
+BRONZE_SCHEMA = BRONZE_ORDERS_RAW.schema()
 
 
 class SourcePayloadError(ValueError):
