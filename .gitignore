@@ -2,7 +2,9 @@ __pycache__/
 *.pyc
 .venv/
 data/
+.ci-data/
 *.egg-info/
 .pytest_cache/
 .coverage
 *-checkpoint.json
+*.run-manifest.json

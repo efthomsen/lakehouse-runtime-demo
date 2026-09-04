@@ -4,14 +4,39 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 jobs:
-  pytest:
+  core:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.12"
-      - run: pip install -e ".[dev]"
-      - run: pytest -v
+          version: "0.12.9"
+      - run: uv sync --locked
+      - run: uv run pytest tests/core
+      - name: lockfile parity (root dev project vs shipped runtime project)
+        run: |
+          uv export --frozen --no-hashes --no-dev --no-emit-project | grep -E '^(deltalake|pyarrow)==' | sort > /tmp/root.txt
+          (cd runtime/image && uv export --frozen --no-hashes --no-dev --no-emit-project) | grep -E '^(deltalake|pyarrow)==' | sort > /tmp/image.txt
+          diff /tmp/root.txt /tmp/image.txt
+
+  runtime-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f runtime/image/Dockerfile --build-arg GIT_COMMIT=$(git rev-parse --short=6 HEAD) -t lakehouse-runtime:ci .
+      - run: |
+          mkdir -p .ci-data
+          docker run --rm -v "$PWD/.ci-data:/data" lakehouse-runtime:ci \
+            --run-id RUN-CI --window-start 2026-09-01T00:00:00Z --window-end 2026-09-02T00:00:00Z \
+            --table-uri /data/bronze/orders_raw --checkpoint-path /data/checkpoint.json \
+            --manifest-path /data/manifest.json --pages 3
+
+  compatibility:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose --profile compatibility run --rm compatibility-test
