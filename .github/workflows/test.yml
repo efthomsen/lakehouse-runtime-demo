@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -f runtime/image/Dockerfile --build-arg GIT_COMMIT=$(git rev-parse --short=6 HEAD) -t lakehouse-runtime:ci .
+      - run: docker build -f runtime/image/Dockerfile --target stage-0 --build-arg GIT_COMMIT=$(git rev-parse --short=6 HEAD) -t lakehouse-runtime:ci .
       - run: |
           mkdir -p .ci-data
           docker run --rm -v "$PWD/.ci-data:/data" lakehouse-runtime:ci \

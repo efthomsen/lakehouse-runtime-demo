@@ -11,6 +11,7 @@ services:
     build:
       context: .
       dockerfile: runtime/image/Dockerfile
+      target: stage-0
       args:
         GIT_COMMIT: "${GIT_COMMIT:-8a4c1d}"
     image: lakehouse-runtime:local
