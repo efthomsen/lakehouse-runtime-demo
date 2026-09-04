@@ -1,0 +1,37 @@
+# Default path: zero cloud dependency.
+#   docker compose run --rm runtime
+#   docker compose run --rm core-test
+#
+# The `compatibility` profile (tests/compatibility/, added alongside the
+# cross-engine test) is opt-in and starts a pinned Spark/Delta engine:
+#   docker compose --profile compatibility run --rm compatibility-test
+
+services:
+  runtime: # the image Batch runs, pointed at a local volume -- zero cloud
+    build:
+      context: .
+      dockerfile: runtime/image/Dockerfile
+      args:
+        GIT_COMMIT: "${GIT_COMMIT:-8a4c1d}"
+    image: lakehouse-runtime:local
+    volumes:
+      - "./data:/data"
+    command:
+      [
+        "--run-id", "RUN-0187",
+        "--window-start", "2026-09-01T00:00:00Z",
+        "--window-end", "2026-09-02T00:00:00Z",
+        "--table-uri", "/data/bronze/orders_raw",
+        "--checkpoint-path", "/data/checkpoints/orders.json",
+        "--manifest-path", "/data/manifests/RUN-0187.json",
+        "--pages", "10",
+      ]
+
+  core-test: # `uv run pytest tests/core`, run inside the runtime image's Python
+    build:
+      context: .
+      dockerfile: runtime/image/Dockerfile
+    entrypoint: ["uv", "run", "--with", "pytest==9.1.1", "pytest", "/src/tests/core"]
+    volumes:
+      - ".:/src:ro"
+    working_dir: /src
