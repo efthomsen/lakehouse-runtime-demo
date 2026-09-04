@@ -35,3 +35,22 @@ services:
     volumes:
       - ".:/src:ro"
     working_dir: /src
+
+  compatibility-test:
+    profiles: ["compatibility"]
+    build:
+      context: .
+      dockerfile: tests/compatibility/Dockerfile
+      args:
+        DELTALAKE_VERSION: "${COMPAT_DELTALAKE:-1.6.3}"
+    image: "lakehouse-compat:spark4.2.0-delta4.4.0-deltalake${COMPAT_DELTALAKE:-1.6.3}"
+    volumes:
+      - ".:/src:ro"
+      - "compat-data:/work"
+    environment:
+      - "COMPAT_WORKDIR=/work"
+      - "PYTHONDONTWRITEBYTECODE=1"
+    command: ["python3", "-m", "pytest", "-p", "no:cacheprovider", "tests/compatibility", "-v", "-s", "-o", "addopts="]
+
+volumes:
+  compat-data: {}

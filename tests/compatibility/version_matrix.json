@@ -1,0 +1,52 @@
+{
+  "generated_for": "Boundaries of the Lakehouse -- FIG. 04 protocol handshake matrix",
+  "engine": {
+    "spark": "4.2.0",
+    "delta-spark": "4.4.0",
+    "image": "apache/spark:4.2.0-python3@sha256:fc64959c04bd87b0ac686be9aaa9008b69cdb1afc695400528279c8b01f43d89"
+  },
+  "expectations": {
+    "deltalake=1.5.1|delta-spark=4.4.0": {
+      "role": "incident pair -- the external writer version in use when the handshake broke (article 2)",
+      "append_plain": "succeeds",
+      "spark_read_after_external_append": "succeeds",
+      "external_append_after_column_mapping_name": {
+        "outcome": "refused",
+        "exception": "CommitFailedError",
+        "message_contains": "Unsupported table features required"
+      },
+      "external_schema_merge_after_column_mapping_name": {
+        "outcome": "refused",
+        "exception": "CommitFailedError",
+        "message_contains": "Unsupported table features required"
+      },
+      "protocol_after_column_mapping": {
+        "min_reader_version": 3,
+        "min_writer_version": 7,
+        "reader_features_include": ["columnMapping"],
+        "writer_features_include": ["columnMapping"]
+      },
+      "last_tested": {"date": null, "host": null}
+    },
+    "deltalake=1.6.3|delta-spark=4.4.0": {
+      "role": "current pin",
+      "append_plain": "succeeds",
+      "spark_read_after_external_append": "succeeds",
+      "external_append_after_column_mapping_name": {
+        "outcome": "succeeds"
+      },
+      "external_schema_merge_after_column_mapping_name": {
+        "outcome": "refused",
+        "exception": "DeltaError",
+        "message_contains": "Schema evolution on column-mapped tables is not yet supported"
+      },
+      "protocol_after_column_mapping": {
+        "min_reader_version": 3,
+        "min_writer_version": 7,
+        "reader_features_include": ["columnMapping"],
+        "writer_features_include": ["columnMapping"]
+      },
+      "last_tested": {"date": null, "host": null}
+    }
+  }
+}
