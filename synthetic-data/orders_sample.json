@@ -1,0 +1,8 @@
+[
+  { "event_id": "event_8840", "updated_at": "2026-09-01T08:02:11Z", "customer_id": "cust_001", "order_date": "2026-09-01", "status": "completed", "net_amount": 129.50 },
+  { "event_id": "event_8841", "updated_at": "2026-09-01T08:03:47Z", "customer_id": "cust_002", "order_date": "2026-09-01", "status": "completed", "net_amount": 74.00 },
+  { "event_id": "event_8842", "updated_at": "2026-09-01T08:05:02Z", "customer_id": "cust_001", "order_date": "2026-09-01", "status": "completed", "net_amount": 39.99 },
+  { "event_id": "event_8843", "updated_at": "2026-09-01T08:06:19Z", "customer_id": "cust_003", "order_date": "2026-09-01", "status": "cancelled", "net_amount": 0.0 },
+  { "event_id": "event_8844", "updated_at": "2026-09-01T08:09:55Z", "customer_id": "cust_002", "order_date": "2026-09-01", "status": "completed", "net_amount": 210.25 },
+  { "event_id": "event_8845", "updated_at": "2026-09-01T08:11:34Z", "customer_id": "cust_004", "order_date": "2026-09-01", "status": "completed", "net_amount": 15.00 }
+]

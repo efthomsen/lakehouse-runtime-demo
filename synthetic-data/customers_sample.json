@@ -1,0 +1,6 @@
+[
+  { "event_id": "cust_evt_001", "updated_at": "2026-08-15T00:00:00Z", "customer_id": "cust_001", "order_date": "2026-08-15", "status": "n/a", "net_amount": 0.0, "market": "DK" },
+  { "event_id": "cust_evt_002", "updated_at": "2026-08-16T00:00:00Z", "customer_id": "cust_002", "order_date": "2026-08-16", "status": "n/a", "net_amount": 0.0, "market": "DE" },
+  { "event_id": "cust_evt_003", "updated_at": "2026-08-17T00:00:00Z", "customer_id": "cust_003", "order_date": "2026-08-17", "status": "n/a", "net_amount": 0.0, "market": "DK" },
+  { "event_id": "cust_evt_004", "updated_at": "2026-08-18T00:00:00Z", "customer_id": "cust_004", "order_date": "2026-08-18", "status": "n/a", "net_amount": 0.0, "market": "SE" }
+]
