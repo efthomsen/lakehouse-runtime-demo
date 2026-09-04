@@ -29,6 +29,7 @@ jobs:
       - run: docker build -f runtime/image/Dockerfile --target stage-0 --build-arg GIT_COMMIT=$(git rev-parse --short=6 HEAD) -t lakehouse-runtime:ci .
       - run: |
           mkdir -p .ci-data
+          chmod 777 .ci-data
           docker run --rm -v "$PWD/.ci-data:/data" lakehouse-runtime:ci \
             --run-id RUN-CI --window-start 2026-09-01T00:00:00Z --window-end 2026-09-02T00:00:00Z \
             --table-uri /data/bronze/orders_raw --checkpoint-path /data/checkpoint.json \
