@@ -10,6 +10,11 @@
       "role": "incident pair -- the external writer version in use when the handshake broke (article 2)",
       "append_plain": "succeeds",
       "spark_read_after_external_append": "succeeds",
+      "external_read_after_column_mapping_name": {
+        "outcome": "refused",
+        "exception": "DeltaProtocolError",
+        "message_contains": "deltalake only supports version 1 or"
+      },
       "external_append_after_column_mapping_name": {
         "outcome": "refused",
         "exception": "CommitFailedError",
@@ -21,17 +26,27 @@
         "message_contains": "Unsupported table features required"
       },
       "protocol_after_column_mapping": {
-        "min_reader_version": 3,
+        "min_reader_version": 2,
         "min_writer_version": 7,
-        "reader_features_include": ["columnMapping"],
-        "writer_features_include": ["columnMapping"]
+        "reader_features_include": [],
+        "writer_features_include": [
+          "columnMapping"
+        ]
       },
-      "last_tested": {"date": null, "host": null}
+      "last_tested": {
+        "date": "2026-09-04",
+        "host": "esben-desktop"
+      }
     },
     "deltalake=1.6.3|delta-spark=4.4.0": {
       "role": "current pin",
       "append_plain": "succeeds",
       "spark_read_after_external_append": "succeeds",
+      "external_read_after_column_mapping_name": {
+        "outcome": "refused",
+        "exception": "DeltaProtocolError",
+        "message_contains": "deltalake only supports version 1 or"
+      },
       "external_append_after_column_mapping_name": {
         "outcome": "succeeds"
       },
@@ -41,12 +56,17 @@
         "message_contains": "Schema evolution on column-mapped tables is not yet supported"
       },
       "protocol_after_column_mapping": {
-        "min_reader_version": 3,
+        "min_reader_version": 2,
         "min_writer_version": 7,
-        "reader_features_include": ["columnMapping"],
-        "writer_features_include": ["columnMapping"]
+        "reader_features_include": [],
+        "writer_features_include": [
+          "columnMapping"
+        ]
       },
-      "last_tested": {"date": null, "host": null}
+      "last_tested": {
+        "date": "2026-09-04",
+        "host": "esben-desktop"
+      }
     }
   }
 }

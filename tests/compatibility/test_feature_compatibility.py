@@ -95,8 +95,17 @@ def test_feature_compatibility_incident_shape(spark, version_matrix, compat_tabl
     for feature in expected_protocol["writer_features_include"]:
         assert feature in (protocol.writer_features or [])
 
-    # The table is still valid -- "the table format remained open" (article 2).
-    assert DeltaTable(compat_table_uri).to_pyarrow_table().num_rows == 20
+    # The table format itself remained open -- "the table format remained
+    # open; the practical interoperability envelope had changed" (article
+    # 2). Whether the *external reader* can still read it is a separate,
+    # version-keyed question, same as the writer question below: at the
+    # pinned versions here, plain `ALTER TABLE ... columnMapping.mode`
+    # leaves the table at reader version 2, which delta-rs 1.6.x's
+    # to_pyarrow_table() path refuses outright (it only handles version 1
+    # or the table-features-encoded version 3) -- the envelope narrowed on
+    # the read side too, not only the write side.
+    observed_read = _attempt(lambda: DeltaTable(compat_table_uri).to_pyarrow_table())
+    _assert_matches(observed_read, expected["external_read_after_column_mapping_name"])
 
     # 3. External writer retries a plain append.
     observed_append = _attempt(lambda: _append_page(compat_table_uri, page=42))
@@ -104,11 +113,12 @@ def test_feature_compatibility_incident_shape(spark, version_matrix, compat_tabl
 
     # And a schema-evolving append (this is where the envelope narrows further).
     def _schema_merge_append():
+        import pyarrow as pa
         from deltalake import write_deltalake
 
         extra_page = SyntheticOrdersAPI(pages=1, page_size=5, start_page=43).fetch(43)
         table = to_bronze_table(extra_page.records, run_id="RUN-0187", page=43, ingested_at=datetime.now(timezone.utc))
-        table = table.append_column("source_region", [None] * table.num_rows)
+        table = table.append_column("source_region", pa.array([None] * table.num_rows, type=pa.string()))
         write_deltalake(compat_table_uri, table, mode="append", schema_mode="merge")
 
     observed_merge = _attempt(_schema_merge_append)
@@ -120,6 +130,7 @@ def test_feature_compatibility_incident_shape(spark, version_matrix, compat_tabl
           f"Spark / Delta runtime: {importlib.metadata.version('pyspark')} / "
           f"delta-spark {importlib.metadata.version('delta-spark')}")
     print(f"Observed: {datetime.now(timezone.utc).date().isoformat()}  on: {platform.node()}")
+    print(f"external read after column mapping (name): {observed_read['outcome']}")
     print(f"external append after column mapping (name): {observed_append['outcome']}")
     print(f"external schema-merge after column mapping (name): {observed_merge['outcome']}")
     print(f"protocol: reader {protocol.min_reader_version} / writer {protocol.min_writer_version}  "

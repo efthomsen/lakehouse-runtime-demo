@@ -1,5 +1,6 @@
 import json
 import os
+import uuid
 from pathlib import Path
 
 import pytest
@@ -29,6 +30,9 @@ def version_matrix() -> dict:
 
 @pytest.fixture
 def compat_table_uri() -> str:
-    workdir = Path(os.environ.get("COMPAT_WORKDIR", "/tmp/compat-work"))
+    # The volume backing COMPAT_WORKDIR persists across `docker compose run`
+    # invocations, so each run gets its own subdirectory -- otherwise a
+    # second run appends onto a table an earlier run already created.
+    workdir = Path(os.environ.get("COMPAT_WORKDIR", "/tmp/compat-work")) / uuid.uuid4().hex
     workdir.mkdir(parents=True, exist_ok=True)
     return str(workdir / "orders_raw")

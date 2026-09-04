@@ -35,6 +35,7 @@ class Checkpoint:
         if self.path.exists():
             state = json.loads(self.path.read_text())
         state.setdefault(run_id, {})[str(page)] = {"complete": True, "delta_version": delta_version}
+        self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_text(json.dumps(state))
 
     def delta_version_for(self, run_id: str, page: int) -> int | None:

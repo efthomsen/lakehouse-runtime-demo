@@ -27,14 +27,11 @@ services:
         "--pages", "10",
       ]
 
-  core-test: # `uv run pytest tests/core`, run inside the runtime image's Python
+  core-test: # `uv run pytest tests/core`, run inside the runtime image's own Python (the `test` build stage)
     build:
       context: .
       dockerfile: runtime/image/Dockerfile
-    entrypoint: ["uv", "run", "--with", "pytest==9.1.1", "pytest", "/src/tests/core"]
-    volumes:
-      - ".:/src:ro"
-    working_dir: /src
+      target: test
 
   compatibility-test:
     profiles: ["compatibility"]
