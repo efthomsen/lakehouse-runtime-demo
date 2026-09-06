@@ -13,7 +13,7 @@ Microsoft Fabric:
 3. **Where Python Stops**: why Gold-layer business logic moves back into
    Fabric through Materialized Lake Views.
 
-Articles (site currently gated behind Basic Auth pending public launch):
+Articles:
 
 **Part 1: Cheap Compute, Real Engineering**
 - [The Placement Decision](https://esbenthomsen.com/writing/the-placement-decision)
