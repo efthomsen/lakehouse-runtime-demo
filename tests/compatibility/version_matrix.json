@@ -1,5 +1,5 @@
 {
-  "generated_for": "Boundaries of the Lakehouse -- FIG. 04 protocol handshake matrix",
+  "generated_for": "Boundaries of the Lakehouse -- \"The Feature Envelope\", FIG. 01 protocol handshake matrix",
   "engine": {
     "spark": "4.2.0",
     "delta-spark": "4.4.0",
@@ -7,7 +7,7 @@
   },
   "expectations": {
     "deltalake=1.5.1|delta-spark=4.4.0": {
-      "role": "incident pair -- the external writer version in use when the handshake broke (article 2)",
+      "role": "incident pair -- the external writer version in use when the handshake broke (see \"The Handshake Breaks\")",
       "append_plain": "succeeds",
       "spark_read_after_external_append": "succeeds",
       "external_read_after_column_mapping_name": {

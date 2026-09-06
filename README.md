@@ -13,14 +13,26 @@ Microsoft Fabric:
 3. **Where Python Stops**: why Gold-layer business logic moves back into
    Fabric through Materialized Lake Views.
 
-Articles: <https://esbenthomsen.com/writing> (the site is pre-launch as of
-this repo's rev2 restructure; per-article links will be added once
-published).
+Articles:
 
-> This series distils patterns from production data-platform work into a
-> synthetic architecture. Names, data, scale, and some implementation
-> choices have been changed to make the trade-offs reproducible and safe to
-> publish.
+**Part 1: Cheap Compute, Real Engineering**
+- [The Placement Decision](https://esbenthomsen.com/writing/the-placement-decision)
+- [Permitted Drift](https://esbenthomsen.com/writing/permitted-drift)
+- [The Price of Cheap](https://esbenthomsen.com/writing/the-price-of-cheap)
+
+**Part 2: Keep the Lakehouse, Move the Compute**
+- [The Handshake Breaks](https://esbenthomsen.com/writing/the-handshake-breaks)
+- [The Ghost Retry](https://esbenthomsen.com/writing/the-ghost-retry)
+- [The Feature Envelope](https://esbenthomsen.com/writing/the-feature-envelope)
+
+**Part 3: Where Python Stops**
+- [Handover at Silver](https://esbenthomsen.com/writing/handover-at-silver)
+- [Skipped, Incremental, Full](https://esbenthomsen.com/writing/skipped-incremental-full)
+- [Three Owners](https://esbenthomsen.com/writing/three-owners)
+
+> This series is based on production experience. The architecture and
+> companion repository are purpose-built public examples; names, data,
+> scale and selected implementation details have been changed.
 
 ## The architecture
 
@@ -64,7 +76,7 @@ uv run python runtime/image/entrypoint.py \
 # The same workload as the image Azure Batch actually runs
 docker compose run --rm runtime
 
-# Opt-in: a pinned Spark/Delta engine reproduces article 2's incident shape
+# Opt-in: a pinned Spark/Delta engine reproduces "The Handshake Breaks" incident shape
 docker compose --profile compatibility run --rm compatibility-test
 ```
 
@@ -173,7 +185,8 @@ Verified in this repo, by test:
 - The cross-engine incident shape (`tests/compatibility/`, opt-in): real
   behaviour observed against a pinned `deltalake`/Spark/`delta-spark` pair,
   recorded in `tests/compatibility/version_matrix.json`, not asserted from
-  memory.
+  memory; this is the data source for the Fig. 01 protocol-handshake matrix
+  in "The Feature Envelope".
 
 Explicitly **not** verified against a real Fabric workspace. See the
 `UNVERIFIED` markers in each file before treating them as final:
