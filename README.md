@@ -18,17 +18,17 @@ Articles (site currently gated behind Basic Auth pending public launch):
 **Part 1: Cheap Compute, Real Engineering**
 - [The Placement Decision](https://esbenthomsen.com/writing/the-placement-decision)
 - [Permitted Drift](https://esbenthomsen.com/writing/permitted-drift)
-- The Price of Cheap (draft, not yet public)
+- [The Price of Cheap](https://esbenthomsen.com/writing/the-price-of-cheap)
 
 **Part 2: Keep the Lakehouse, Move the Compute**
-- The Handshake Breaks (draft, not yet public)
-- The Ghost Retry (draft, not yet public)
-- The Feature Envelope (draft, not yet public)
+- [The Handshake Breaks](https://esbenthomsen.com/writing/the-handshake-breaks)
+- [The Ghost Retry](https://esbenthomsen.com/writing/the-ghost-retry)
+- [The Feature Envelope](https://esbenthomsen.com/writing/the-feature-envelope)
 
 **Part 3: Where Python Stops**
-- Handover at Silver (draft, not yet public)
-- Skipped, Incremental, Full (draft, not yet public)
-- Three Owners (draft, not yet public)
+- [Handover at Silver](https://esbenthomsen.com/writing/handover-at-silver)
+- [Skipped, Incremental, Full](https://esbenthomsen.com/writing/skipped-incremental-full)
+- [Three Owners](https://esbenthomsen.com/writing/three-owners)
 
 > This series is based on production experience. The architecture and
 > companion repository are purpose-built public examples; names, data,
